@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mipt Games</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <style>
+  .game {
+    margin-bottom: 40px;
+  }
+  </style>
+</head>
+<body>
+    <div class="container" id="main">
+      <div id="prototype">
+        <div class="game">
+          <h3 class="game__title"></h3>
+          <a href="#" class="game__link"></a>
+          <pre class="game__code">
+          </pre>
+          <button class="btn-default btn game__copy">Копировать</button>
+        </div>
+      </div>
+    </div>
+    <script
+      src="https://code.jquery.com/jquery-3.1.1.min.js"
+      integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+      crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
+    <script>
+      window.GAMES = [
+        {
+          title : 'Приземляшка',
+          url : 'https://courses.mipt.ru/roscosmos/demo/lunar-lander',
+        },
+        {
+          title : 'Гравитация',
+          url : 'https://courses.mipt.ru/roscosmos/demo/gravity-and-orbits',
+        },
+        {
+          title : 'Струна',
+          url : 'https://courses.mipt.ru/roscosmos/demo/wave-on-a-string',
+        },
+        {
+          title : 'Преломление света',
+          url : 'https://courses.mipt.ru/roscosmos/demo/bending-light',
+        }
+      ]
+    </script>
+    <script>
+function generateId() {
+  return '_' + Math.floor((1 + Math.random()) * 0x10000)
+    .toString(16)
+    .substring(1);
+}
+
+$(function() {
+    var prototype = $('#prototype');
+
+    var result = $('<div />');
+
+    window.GAMES.forEach(function(item) {
+        var newItem = prototype.clone();
+        var _id = generateId();
+        var iframeCode = '<iframe src="' + item.url + '/index.html" width="800" height="600" scrolling="no" allowfullscreen></iframe>'
+
+        newItem.find('.game__title').text(item.title);
+
+        newItem.find('.game__link')
+            .text(item.url)
+            .attr('href', item.url)
+
+        newItem.find('.game__code')
+            .attr('id', _id)
+            .text(iframeCode)
+
+        newItem.find('.game__copy')
+            .attr('data-clipboard-target', '#' + _id);
+
+
+        result.append(newItem);
+    })
+
+    prototype.hide();
+    $('#main').append(result);
+
+    $('.game__copy').each(function(index, item) {
+      var _id = $(this).data('clipboard-target');
+
+      if(_id == null) {
+        return
+      }
+
+      var clipboard = new Clipboard($(this)[0], {
+        target : function(target) {
+          return document.getElementById(_id.substr(1));
+        }
+      })
+    })
+
+});
+</script>
+</body>
+</html>
